@@ -1,0 +1,41 @@
+#
+# This file, project or its parts can not be copied and/or distributed without
+# the express permission of Edizon Basseto Jr.
+#
+# @file: CMakeLists.rapidjson.txt
+# @Date: Tuesday, 5th March 2019
+# @author: Edizon Basseto Jr (edizon.basseto@outlook.com.br>)
+#
+
+#------------------
+
+set(RAPIDJSON_ROOT  ${CMAKE_CURRENT_SOURCE_DIR}/3pp/rapidjson)
+
+include(ProcessorCount)
+ProcessorCount(ThreadNum)
+set(MAKE_ARGS)
+if(NOT N EQUAL 0)
+    set(MAKE_ARGS -j${ThreadNum})
+endif()
+
+set(BYPRODUCT ${CMAKE_STATIC_LIBRARY_PREFIX}rapidjson${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+ExternalProject_Add(rapidjson_lib
+    SOURCE_DIR ${RAPIDJSON_ROOT}
+    BUILD_IN_SOURCE TRUE
+    CONFIGURE_COMMAND ""
+    COMMAND cmake ${RAPIDJSON_ROOT}
+    INSTALL_COMMAND make install ${MAKE_ARGS}
+    BUILD_BYPRODUCTS ${CRYPTOPP_ROOT}/${BYPRODUCT})
+
+
+add_library(rapidjson STATIC IMPORTED)
+include_directories(${RAPIDJSON_ROOT}/include)
+add_dependencies(rapidjson rapidjson_lib)
+
+unset(BYPRODUCT)
+unset(RAPIDJSON_ROOT)
+unset(ThreadNum)
+unset(MAKE_ARGS)
+#------------------
+#########################

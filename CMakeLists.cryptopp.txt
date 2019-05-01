@@ -1,0 +1,51 @@
+#
+# This file, project or its parts can not be copied and/or distributed without
+# the express permission of Edizon Basseto Jr.
+#
+# @file: CMakeLists.cryptopp.txt
+# @Date: Tuesday, 5th March 2019
+# @author: Edizon Basseto Jr (edizon.basseto@outlook.com.br>)
+#
+
+#------------------
+# https://github.com/monero-project/kovri/blob/master/cmake/BuildCryptoPP.cmake
+#
+
+set(CRYPTOPP_ROOT  ${CMAKE_CURRENT_SOURCE_DIR}/3pp/cryptopp)
+set(BUILD_CMD make)
+
+include(ProcessorCount)
+ProcessorCount(ThreadNum)
+set(MAKE_ARGS)
+if(NOT N EQUAL 0)
+    set(MAKE_ARGS -j${ThreadNum})
+endif()
+
+set(BYPRODUCT ${CMAKE_STATIC_LIBRARY_PREFIX}cryptopp${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+#cryptopp does not have a cmake file...
+  ExternalProject_Add(cryptopp_lib
+    SOURCE_DIR ${CRYPTOPP_ROOT}
+    BUILD_IN_SOURCE TRUE
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ${BUILD_CMD} clean
+    COMMAND ${BUILD_CMD} ${MAKE_ARGS}
+    INSTALL_COMMAND ${BUILD_CMD} install ${MAKE_ARGS}
+    BUILD_BYPRODUCTS ${CRYPTOPP_ROOT}/${BYPRODUCT})
+
+add_library(cryptopp STATIC IMPORTED)
+
+include_directories(${CRYPTOPP_ROOT}/)
+
+set_property(TARGET cryptopp PROPERTY IMPORTED_LOCATION ${CRYPTOPP_ROOT}/libcryptopp.a)
+
+add_dependencies(cryptopp cryptopp_lib)
+
+unset(BYPRODUCT)
+unset(ThreadNum)
+unset(MAKE_ARGS)
+unset(BUILD_CMD)
+unset(CRYPTOPP_ROOT)
+
+#------------------
+#########################

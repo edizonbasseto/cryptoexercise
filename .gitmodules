@@ -1,0 +1,12 @@
+[submodule "3pp/pistache"]
+	path = 3pp/pistache
+	url = https://github.com/oktal/pistache
+[submodule "3pp/cryptopp"]
+	path = 3pp/cryptopp
+	url = https://github.com/weidai11/cryptopp.git
+[submodule "3pp/rapidjson"]
+	path = 3pp/rapidjson
+	url = https://github.com/Tencent/rapidjson.git
+[submodule "3pp/nlohmann_json"]
+	path = 3pp/nlohmann_json
+	url = https://github.com/nlohmann/json
