@@ -26,12 +26,17 @@ Para o pacote NIST, é necessário:
 Passos:
 
   1. Baixe o código fonte, conforme indicado em [como baixar](#Como-baixar).
-  2. Crie uma diretório build, dentro do novo diretório baixado.
-  3. Execute:
+  2. BOOST não fornece métodos para CMAKE, por isso:
+       1. cd 3pp/boost
+       2. ./bootstrap.sh
+       3. ./b2 header
+       4. cd ../../
+  3. Crie uma diretório build, dentro do novo diretório baixado.
+  4. Execute:
        1. cd build
        2. cmake ../
        3. make install (may require privileges).
-  4. O diretório ../dist será criado com o executável.
+  5. O diretório ../dist será criado com o executável.
 
 ## Arquitetura
 

@@ -62,6 +62,7 @@ set(CRYPTOMETHOD_EXECUTABLES_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/ScramblerSliceResponse.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/SlicedData.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ScramblerEndpoint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/KeyBusinessLogic.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp )
 
 add_executable(cryptomethod ${CRYPTOMETHOD_EXECUTABLES_FILES})
