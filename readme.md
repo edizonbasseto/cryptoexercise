@@ -3,7 +3,13 @@
 *Esse programa é um exercicio entregue no primeiro bimestre de 2019, na disciplina CT208,
 professor Dr. Nei Soma, do programa de pós graduação em Eng. Eletrônica e Computação - PG/EEC  - ITA.*
 
-O exercício propõe a criação de um método capaz de criptografar
+O exercício propõe a criação de um método capaz de criptografar um dado baseado em uma chave
+criada através do método da raiz quadrada com fração continuada. A configuração da distribuição dos resultados
+das frações continuadas é normal, gerando assim a mesma probabilidade de surgimento de escolha de um número,
+desde que desconsiderado o último elemento.
+
+O número utilizado para geração da fração continuado será chamado de numero gerador, e, junto com um protocolo
+que será explicado neste readme, será enviado entre as partes.
 
 ## Como baixar
 
@@ -26,11 +32,6 @@ Para o pacote NIST, é necessário:
 Passos:
 
   1. Baixe o código fonte, conforme indicado em [como baixar](#Como-baixar).
-  2. BOOST não fornece métodos para CMAKE, por isso:
-       1. cd 3pp/boost
-       2. ./bootstrap.sh
-       3. ./b2 header
-       4. cd ../../
   3. Crie uma diretório build, dentro do novo diretório baixado.
   4. Execute:
        1. cd build

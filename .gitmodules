@@ -10,6 +10,3 @@
 [submodule "3pp/nlohmann_json"]
 	path = 3pp/nlohmann_json
 	url = https://github.com/nlohmann/json
-[submodule "3pp/boost"]
-	path = 3pp/boost
-	url = https://github.com/boostorg/boost.git
