@@ -9,6 +9,7 @@
 #ifndef __KEY_BUSINESS_LOGIC_H__
 #define __KEY_BUSINESS_LOGIC_H__
 
+#include <stdio.h>
 #include <pistache/endpoint.h>
 
 typedef std::array<std::string, 5> ProtocolArray_t;
@@ -46,10 +47,13 @@ class SecretKey
          * @param jump how many jumps to take a single value
          * @param size: the message size, meaning, how many values must be retrieved.
          */
-        static long int calculateKey(const int numberGenerator,
-                                     const int startPosition,
-                                     const int jump,
-                                     const int size);
+        static std::vector<unsigned long> calculateKey(const int numberGenerator,
+                                                       const int startPosition,
+                                                       const int jump,
+                                                       const int size);
+    private:
+        // https://stackoverflow.com/questions/12182701/generating-continued-fractions-for-square-roots
+        static std::vector<unsigned long> sqrtCF(unsigned long D);
 };
 
 /**
