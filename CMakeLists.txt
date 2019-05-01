@@ -14,7 +14,7 @@ include(ExternalProject)
 cmake_minimum_required (VERSION 3.1.3)
 
 #Project name
-project(scrambler LANGUAGES CXX)
+project(CryptoMethod LANGUAGES CXX)
 
 #-std=11
 set_property(TARGET PROPERTY CXX_STANDARD 11)
@@ -51,7 +51,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.cryptopp.txt) #The worst... don't
 #Add the given directories to those the compiler uses to search for include files.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
 
-set(SCRAMBLER_EXECUTABLES_FILES
+set(CRYPTOMETHOD_EXECUTABLES_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/business/SliceBusiness.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/handlers/HealthCheckHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/handlers/ScramblerHandler.cpp
@@ -64,8 +64,8 @@ set(SCRAMBLER_EXECUTABLES_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ScramblerEndpoint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp )
 
-add_executable(scrambler ${SCRAMBLER_EXECUTABLES_FILES})
-install(TARGETS scrambler DESTINATION bin)
+add_executable(cryptomethod ${CRYPTOMETHOD_EXECUTABLES_FILES})
+install(TARGETS cryptomethod DESTINATION bin)
 
 #Joining LIBS
-target_link_libraries(scrambler PUBLIC cryptopp pistache nlohmann_json pthread)
+target_link_libraries(cryptomethod PUBLIC cryptopp pistache nlohmann_json pthread)

@@ -41,14 +41,19 @@ int main(int argc, char * argv[])
 
     //Pistache::Address addr(Pistache::Ipv4::loopback(), Pistache::Port(9080));
     int thr = std::thread::hardware_concurrency();
-
     drawHeaderMessage(thr);
 
+    //Get the JSON Schemas directory.
+    //If not informed will get the default ./jsonSchemas directory.
     std::string schemasdir("");
-    //if (argc > 1)
-    //{
-    //    schemasdir = std::string (argv[1]);
-    //}
+    if (argc > 1)
+    {
+        schemasdir = std::string (argv[1]);
+    }
+
+    RandomHelpers randomHelpers = RandomHelpers();
+
+    cout << randomHelpers.getRandomWord(17);
 
     //ScramblerEndpoint scrambler(addr, schemasdir);
     //scrambler.init(thr);
