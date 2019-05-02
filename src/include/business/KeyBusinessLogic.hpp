@@ -9,10 +9,19 @@
 #ifndef __KEY_BUSINESS_LOGIC_H__
 #define __KEY_BUSINESS_LOGIC_H__
 
-#include <stdio.h>
-#include <pistache/endpoint.h>
+#include <BaseInclude.hpp>
+#include <array>
+#include <vector>
+#include <sstream>
+#include <iterator>
+#include <cmath>
+#include <iomanip>
+#include <tuple>
+#include <limits>
+#include <gmp.h>
 
 typedef std::array<std::string, 5> ProtocolArray_t;
+typedef std::vector<unsigned long int> ContinuedFractionForm_t;
 
 /**
  * All the logic reggarding decryption/encrpytion of secret value.
@@ -47,13 +56,28 @@ class SecretKey
          * @param jump how many jumps to take a single value
          * @param size: the message size, meaning, how many values must be retrieved.
          */
-        static std::vector<unsigned long> calculateKey(const int numberGenerator,
-                                                       const int startPosition,
-                                                       const int jump,
-                                                       const int size);
+        const static long int calculateKey(const int numberGenerator,
+                                           const int startPosition,
+                                           const int jump,
+                                           const int size);
     private:
-        // https://stackoverflow.com/questions/12182701/generating-continued-fractions-for-square-roots
-        static std::vector<unsigned long> sqrtCF(unsigned long D);
+        /**
+         * Get the linear form of a continued fraction.
+         * https://stackoverflow.com/questions/12182701/generating-continued-fractions-for-square-roots
+         *
+         **/
+        const static ContinuedFractionForm_t sqrtCF(unsigned long D);
+
+        /**
+         * Now calculate the Sum of values, bases on the control numbers has informed.
+         **/
+        const static long int calculateCF(const ContinuedFractionForm_t& D,
+                                          const int startPosition,
+                                          const int jump,
+                                          const int size);
+
+        static void dumpLinearForm(const ContinuedFractionForm_t& D);
+        static void dumpSumResult(const std::vector<long double>& D);
 };
 
 /**

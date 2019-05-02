@@ -50,6 +50,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.cryptopp.txt) #The worst... don't
 
 #Add the given directories to those the compiler uses to search for include files.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include/helpers)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include/business)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include/handlers)
 
 set(CRYPTOMETHOD_EXECUTABLES_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/business/SliceBusiness.cpp
@@ -57,6 +60,7 @@ set(CRYPTOMETHOD_EXECUTABLES_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/handlers/HealthCheckHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/handlers/ScramblerHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers/RandomHelpers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers/RsaHelpers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/DescramblerSliceRequest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/DescramblerSliceResponse.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/ScramblerSliceRequest.cpp
@@ -69,4 +73,4 @@ add_executable(cryptomethod ${CRYPTOMETHOD_EXECUTABLES_FILES})
 install(TARGETS cryptomethod DESTINATION bin)
 
 #Joining LIBS
-target_link_libraries(cryptomethod PUBLIC cryptopp pistache nlohmann_json pthread)
+target_link_libraries(cryptomethod PUBLIC gmp gmpxx cryptopp pistache nlohmann_json pthread)

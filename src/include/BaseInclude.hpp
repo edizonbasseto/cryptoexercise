@@ -13,5 +13,7 @@
 #define __BASE_INCLUDES__
 
 #include<iostream>
+#include <stdio.h>
+#include <string>
 
 #endif

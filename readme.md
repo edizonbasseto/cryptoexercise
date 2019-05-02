@@ -8,8 +8,12 @@ criada através do método da raiz quadrada com fração continuada. A configura
 das frações continuadas é normal, gerando assim a mesma probabilidade de surgimento de escolha de um número,
 desde que desconsiderado o último elemento.
 
-O número utilizado para geração da fração continuado será chamado de numero gerador, e, junto com um protocolo
-que será explicado neste readme, será enviado entre as partes.
+O número utilizado para geração da fração continua será chamado de numero gerador, e, junto com um protocolo
+que será explicado neste readme, será enviado entre as partes. O conjunto de dados formado por esse protocolo será
+chamado de palavra secreta.
+
+Para facilitar a comunicação entre as partes, o sistema irá prover uma REST API, encapsulando as lógicas de negócio da aplicação.
+**Sistema meramente acadêmico, sem utilização para ambientes produtivos**
 
 ## Como baixar
 
@@ -23,28 +27,26 @@ Desenvolvido em C++, testado somente em ambiente Linux, para compilar é necess�
 
 - Pacote Build Essentials
 - CMake
-
-Para o pacote NIST, é necessário:
-
-- gsl
-- texlive-core
+- libgmp3-dev
 
 Passos:
 
   1. Baixe o código fonte, conforme indicado em [como baixar](#Como-baixar).
-  3. Crie uma diretório build, dentro do novo diretório baixado.
-  4. Execute:
+  2. Crie uma diretório build, dentro do novo diretório baixado.
+  3. Execute:
        1. cd build
        2. cmake ../
        3. make install (may require privileges).
-  5. O diretório ../dist será criado com o executável.
+  4. O diretório ../dist será criado com o executável.
 
-## Arquitetura
+## Desenvolvimento
 
 ### Premissas
 
 1. Não é escopo desse trabalho a preocupação com execuçõs multi-threads.
 2. Não é escopo desse trabalho multi-plataformas.
+3. Não é escopo deste trabalho proteger as rotas de comunicação REST criadas com intuito de facilitar a demonstração.
+4. O sistema não é um sistema validado e "production-ready".
 
 ### Geração de número randômicos
 
@@ -74,3 +76,38 @@ cd 3pp\cryptopp
 ./cryptoTest.sh (aguarde)
 ./cryptoTest -v 77
 ```
+
+### Terminologia dos segredos
+
+#### Mensagem
+
+Texto original que deverá ser criptografado e descriptografado.
+
+#### Chave Secreta
+
+A chave secreta é composta de números gerados do cálculo das dizimas de uma raiz quadrada com fração contínua.
+Será utilizada junto com a lógica XOR para criptografar ou descriptografar os dados enviados da mensagem.
+A fração continua será calculada pela biblioteca GMP: <https://gmplib.org/manual/Square-Root-Algorithm.html>.
+
+#### Palavra Secreta
+
+É a palavra resultante do procotolo que contem todos os dados necessários para que uma mensagem seja criptografada
+e descriptografada de forma correta. A palavra secreta será enviada entre as partes.
+
+#### Protoclo da palavra secreta
+
+Estrutura que define as regras pelas quais a mensagem foi criptografada originalmente.
+
+#### Lixo
+
+Quantidade de dados aleatórios anexados no antes e depois da mensagem original, afim de dificultar a quebra do
+sigilo.
+
+### O Protocolo
+
+O protocolo da chave secreta contem as seguintes informações:
+
+     1. O Número Gerador: número responsável pela dízima de fração continuada.
+     2. O ponto de inicio: posição, à partir do primeiro número da dízima, que irá iniciar a geração da chave secreta.
+     3. Pulo: a quantidade de posições que deve-se pular, para ler o próximo número da dízima e continuar a formar a chave secreta.
+     4.
