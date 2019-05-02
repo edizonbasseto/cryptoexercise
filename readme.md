@@ -47,6 +47,7 @@ Passos:
 2. Não é escopo desse trabalho multi-plataformas.
 3. O sistema não é um sistema validado e "production-ready".
 4. Não otimizado para performance.
+5. Não foi criado um framework de logs.
 
 ### Geração de número randômicos
 
@@ -101,7 +102,7 @@ Estrutura que define as regras pelas quais a mensagem foi criptografada original
 #### Lixo
 
 Quantidade de dados aleatórios anexados no antes e depois da mensagem original, afim de dificultar a quebra do
-sigilo. O lixo tem um tamanho aleatório entre 16 e 48 caracteres, além, dos terminadores. Para geração do tamanho de forma
+sigilo. O lixo tem um tamanho aleatório entre 48 e 100 caracteres, além, dos terminadores. Para geração do tamanho de forma
 aleatória, não houve preocupação de usar um gerador criptográfico. O lixo é composto de parte esquerda e parte direita.
 Por ventura, uma combinação de terminadores pode se coincidir com a chave gerada, ou, até mesmo com próprio lixo aleatório gerado.
 Para evitar essa sitação, recomenda-se que o terminador tenha pelo menos tres caracteres diferentes.
@@ -129,7 +130,7 @@ Como esse trabalho é meramente para fins acadêmicos, as chaves estão fixadas 
 
 Para que ocorra uma transação segura, no cenário de duas pessoas trocando mensages, primeiro PERSONA 01 envia a palavra secreta para PERSONA 02.
 
-PERSONA 02 recebe a palavra, utilizando de sua chave privada, descriptografa o valor e valida o sender o checksum.
+PERSONA 02 recebe a palavra, utilizando de sua chave privada, descriptografa o valor e valida o sender (anexado no protocolo) e o checksum.
 
 PERSONA 02 faz o processo reverso, usando a chave publica de PERSONA 01.
 
@@ -137,7 +138,7 @@ PERSONA 01 valida a chave, o emissor e o checksum, além de verificar o conteúd
 
 Nesse momento, PERSONA 01, retorna a mensagem criptografada para PERSONA 02.
 
-PERSONA 02, em posse do protocolo, poderá descriptografar a mensage.
+PERSONA 02, em posse do protocolo, poderá descriptografar a mensagem.
 
 ### A Mensagem enviada
 
@@ -145,6 +146,7 @@ A mensagem enviada entre A e B, após confimação conforme descrito, ira conter
 A mensagem cifrada, além de embaralhada com a chave secreta criada, irá estar em BASE64. Essa escolha foi feita sem fins criptograficos, mas é a maneira mais segura de se transportar um trem de bytes sem o surgimento de caracteres não imprimiveis.
 
 ## RESULTADO EXEMPLO
+(PERSONA 1 tem código interno 0 no sistema. PERSONA2, tem código 1. Isso poderá causar confusão na leitura dos logs.)
 
 ```log
 GERANDO OS DADOS DO PROTOCOLO, DA PERSONA 01 PARA PERSONA 02
