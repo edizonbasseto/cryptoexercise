@@ -7,6 +7,7 @@
  * @author: Edizon Basseto Jr (edizon.basseto@outlook.com>)
  */
 #include <KeyBusinessLogic.hpp>
+#include <hex.h>
 
 ///////////////////////////////////////////////////////
 //// SECRET VALUE                                  ////
@@ -15,37 +16,94 @@ const std::string SecretValue::encryptSecretValue(const SecretValueProtocol& sec
                                                   RsaHelpers::Person personFrom,
                                                   RsaHelpers::Person personTo)
 {
-    std::string scrtValue = std::to_string(secretValue.startPosition) + ";" +
-                            std::to_string(secretValue.jump) + ";" +
-                            std::to_string(secretValue.garbageTeminator) + ";" +
-                            std::to_string(secretValue.garbageTerminatorSize) + ";" +
-                            std::to_string(secretValue.numberGenerator) + ";" +
+    std::string scrtValue = std::to_string(secretValue.startPosition) + PALAVRA_DELIMITADOR +
+                            std::to_string(secretValue.jump) + PALAVRA_DELIMITADOR +
+                            std::to_string(secretValue.garbageTerminatorSize) + PALAVRA_DELIMITADOR +
+                            secretValue.garbageTeminator + PALAVRA_DELIMITADOR +
+                            std::to_string(secretValue.numberGenerator) + PALAVRA_DELIMITADOR +
                             std::to_string(personFrom);
 
+    prepareSecretValue(scrtValue);
     return RsaHelpers::getInstance().encryptRsa(scrtValue, personTo);
+}
+void SecretValue::prepareSecretValue(std::string& secretValueStr)
+{
+    //Create the check sum over this payload.
+    CryptoPP::SHA256 hash;
+    std::string digest;
+    CryptoPP::StringSource s(secretValueStr,
+                             true,
+                             new CryptoPP::HashFilter(hash,
+                                                      new CryptoPP::HexEncoder(
+                                                      new CryptoPP::StringSink(digest))));
+    std::cout << std::endl << "Checksum Gerado...." << digest;
+
+    secretValueStr += PALAVRA_DELIMITADOR + digest;
+}
+
+void SecretValue::validateSecretValue(SecretArray_t dataArr,
+                                      RsaHelpers::Person personFrom,
+                                      RsaHelpers::Person personTo)
+{
+    std::cout << std::endl << "Validando payload recebido...";
+
+    if (dataArr.size() < POSICAO_CHECKSUM ||
+        dataArr[POSICAO_USERFROM] != std::to_string(personFrom))
+    {
+        throw "You are not my sender!!!!!!";
+    }
+
+    const std::string hashSent = dataArr[POSICAO_CHECKSUM];
+
+    std::string data = "";
+
+    for(int i=0; i<dataArr.size()-1; i++)
+    {
+        data += dataArr[i];
+
+        if (i+1 != dataArr.size()-1)
+        {
+            data += ";";
+        }
+    }
+    std::cout << std::endl << std::endl << data;
+
+    CryptoPP::SHA256 hash;
+    std::string digest;
+    CryptoPP::StringSource s(data,
+                             true,
+                             new CryptoPP::HashFilter(hash,
+                                                      new CryptoPP::HexEncoder(
+                                                      new CryptoPP::StringSink(digest))));
+
+    if (0 != digest.compare(hashSent))
+    {
+        throw "Esse dado foi modificado e não poderá ser processado.";
+    }
+
+    dataArr[POSICAO_CHECKSUM] = digest;
+
+    std::cout << std::endl << "Dado validado pela pessoa " << std::to_string(personTo) << std::endl;
 }
 const SecretValueProtocol SecretValue::decodeSecretValue(const std::string& encodedSecretValue,
                                                          RsaHelpers::Person personFrom,
                                                          RsaHelpers::Person personTo)
 {
-    std::string dado = RsaHelpers::getInstance().decryptRsa(encodedSecretValue, personTo);
-    std::vector<std::string> tempVector;
 
+    std::string dado = RsaHelpers::getInstance().decryptRsa(encodedSecretValue, personTo);
+    SecretArray_t tempVector;
+
+    std::cout << dado << std::endl;
     // THERE IS NO SPLIT !!!!!! :(
     size_t pos = 0;
     std::string token;
-    while ((pos = dado.find(PROTOCOL_DELIMITER)) != std::string::npos)
-    {
+    while ((pos = dado.find(PALAVRA_DELIMITADOR.c_str())) != std::string::npos) {
         token = dado.substr(0, pos);
         tempVector.push_back(token);
-        dado.erase(0, pos + PROTOCOL_DELIMITER.length());
+        dado.erase(0, pos + 1);
     }
-
-    if (tempVector.size() < 6 ||
-        tempVector[6] != std::to_string(personFrom))
-    {
-        throw "You are not my sender!!!!!!";
-    }
+    tempVector.push_back(dado);
+    validateSecretValue(tempVector, personFrom, personTo);
 
     return SecretValueProtocolBuilder::buildProtocol(tempVector);
 }
@@ -57,12 +115,11 @@ const SecretValueProtocol SecretValueProtocolBuilder::buildProtocol(
     int startPosition,
     int jump,
     int garbageTerminatorSize,
-    char garbageTeminator,
-    int numberGenerator,
-    int secretSize)
+    std::string garbageTeminator,
+    int numberGenerator)
 {
     SecretValueProtocol prot {startPosition, jump, garbageTerminatorSize,
-                              garbageTeminator, numberGenerator, secretSize};
+                              garbageTeminator, numberGenerator};
 
     validateProtocolData(prot);
 
@@ -80,13 +137,12 @@ const SecretValueProtocol SecretValueProtocolBuilder::buildProtocol(const std::v
         stoi(dataArr[0]),
         stoi(dataArr[1]),
         stoi(dataArr[2]),
-        dataArr[3][0],
-        stoi(dataArr[4]),
-        stoi(dataArr[6])
+        dataArr[3],
+        stoi(dataArr[4])
     );
 }
 
-void validateProtocolData(SecretValueProtocol& valueProtocolData)
+void SecretValueProtocolBuilder::validateProtocolData(SecretValueProtocol& valueProtocolData)
 {
     if (valueProtocolData.startPosition <= 0)
     {
@@ -97,21 +153,19 @@ void validateProtocolData(SecretValueProtocol& valueProtocolData)
     {
         throw "Jump must be greater than zero.";
     }
-
-    if (valueProtocolData.secretSize < 16)
-    {
-        throw "Secret size must be greater than 16";
-    }
 }
 
 ///////////////////////////////////////////////////////
 //// SECRET KEY                                     ///
 ///////////////////////////////////////////////////////
-const long int SecretKey::calculateKey(const int numberGenerator,
-                                       const int startPosition,
-                                       const int jump,
-                                       const int size)
+const std::string SecretKey::calculateKey(const int numberGenerator,
+                                          const int startPosition,
+                                          const int jump,
+                                          const int size)
 {
+    std::cout << std::endl << std::endl
+              << "**** CALCULO DA CHAVE *****" << std::endl;
+
     std::string key = "";
     dumpLinearForm(sqrtCF(numberGenerator));
 
@@ -130,26 +184,25 @@ const long int SecretKey::calculateKey(const int numberGenerator,
     std::string tithe = str.str().substr(str.str().find(".")+1, str.str().length());
 
     std::cout << "Full Calculated number: " << str.str() << std::endl;
-    std::cout << "Tithe: " << tithe << std::endl;
+    std::cout << "Tithe                 : " << tithe << std::endl;
 
     int control = startPosition-1;
+    int limit = tithe.length() > size ? size : tithe.length();
+
     for (int i=0; i<tithe.length(); i++)
     {
         if (control == i)
         {
             key += tithe[i];
-
             control += jump;
         }
     }
-
-    std::cout << "Selected numbers: " << key << std::endl;
-
-    return 0;
+    std::cout << "Selected numbers      : " << key.substr(0, limit) << std::endl;
+    return key.substr(0, limit);
 }
 
 void SecretKey::dumpLinearForm(const ContinuedFractionForm_t& a) {
-   std::cout << "Dump Linear Form " << std::endl;
+   std::cout << "Fração Continua - Representação LINEAR! " << std::endl;
 
     for(int i=0; i < a.size(); i++)
         std::cout << std::setprecision(30) << a.at(i) << ' ';

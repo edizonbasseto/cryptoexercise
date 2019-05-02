@@ -9,6 +9,8 @@
 
 #include <RandomHelpers.hpp>
 
+RandomHelpers::RandomHelpers(){}
+
 std::string RandomHelpers::getRandomWord(int size)
 {
     // Veja explicações no README.

@@ -21,8 +21,44 @@
 #include <gmp.h>
 #include <RsaHelpers.hpp>
 
-static const std::string PROTOCOL_DELIMITER = ";";
 typedef std::vector<unsigned long int> ContinuedFractionForm_t;
+typedef std::vector<std::string> SecretArray_t;
+
+const static std::string PALAVRA_DELIMITADOR = ";";
+const static int POSICAO_CHECKSUM = 6;
+const static int POSICAO_USERFROM = 5;
+
+/**
+ * The secret value protocol.
+ * The protocol is composed by:
+ *  - start position: where to start to retrieve the secret key.
+ *  - jump: how many positions to jump to compose the secret key.
+ *  - garbage terminator size: how many times a terminator must be found to be considered as terminator.
+ *  - garbage terminator: the garbage terminator.
+ *  - numberGenerator: the number to be used to calculate the secret key.
+ */
+struct SecretValueProtocol
+{
+    int startPosition;
+    int jump;
+    int garbageTerminatorSize;
+    std::string garbageTeminator;
+    int numberGenerator;
+    std::string checksum;
+
+    void dump() const
+    {
+        std::cout << "------------------------------------------------" << std::endl
+                  << "SECRET VALUES PROTOCOL"                           << std::endl
+                  << "------------------------------------------------" << std::endl
+                  << "Start Position:" << startPosition                 << std::endl
+                  << "Jump: " << jump << std::endl
+                  << "GarbageTerminatorSize: " << garbageTerminatorSize << std::endl
+                  << "GarbageTerminator: " << garbageTeminator << std::endl
+                  << "NumberGenerator: " << numberGenerator << std::endl
+                  << "------------------------------------------------" << std::endl;
+    }
+};
 
 /**
  * All the logic reggarding decryption/encrpytion of secret value.
@@ -44,6 +80,19 @@ public:
     static const std::string encryptSecretValue(const SecretValueProtocol& secretValue,
                                                 RsaHelpers::Person personFrom,
                                                 RsaHelpers::Person personTo);
+private:
+    /**
+     * Validate the secretValue when received from A to B
+     **/
+    static void validateSecretValue(SecretArray_t dataArr,
+                                    RsaHelpers::Person personFrom,
+                                    RsaHelpers::Person personTo);
+
+    static void split (std::string& dado, char delimitador);
+    /**
+     * Execute final steps before sending fomr A to B.
+     **/
+    static void prepareSecretValue(std::string& secretValueStr);
 
 };
 
@@ -61,10 +110,10 @@ class SecretKey
          * @param jump how many jumps to take a single value
          * @param size: the message size, meaning, how many values must be retrieved.
          */
-        const static long int calculateKey(const int numberGenerator,
-                                           const int startPosition,
-                                           const int jump,
-                                           const int size);
+        const static std::string calculateKey(const int numberGenerator,
+                                              const int startPosition,
+                                              const int jump,
+                                              const int size);
     private:
         /**
          * Get the linear form of a continued fraction.
@@ -86,39 +135,6 @@ class SecretKey
 };
 
 /**
- * The secret value protocol.
- * The protocol is composed by:
- *  - start position: where to start to retrieve the secret key.
- *  - jump: how many positions to jump to compose the secret key.
- *  - garbage terminator size: how many times a terminator must be found to be considered as terminator.
- *  - garbage terminator: the garbage terminator.
- *  - numberGenerator: the number to be used to calculate the secret key.
- */
-struct SecretValueProtocol
-{
-    int startPosition;
-    int jump;
-    int garbageTerminatorSize;
-    char garbageTeminator;
-    int numberGenerator;
-    int secretSize;
-
-    void dump()
-    {
-        std::cout << "------------------------------------------------" << std::endl
-                  << std::endl << "SECRET VALUES PROTOCOL" << std::endl
-                  << "------------------------------------------------" << std::endl
-                  << "Start Position:" << startPosition << std::endl
-                  << "Jump: " << jump << std::endl
-                  << "GarbageTerminatorSize: " << garbageTerminatorSize << std::endl
-                  << "GarbageTerminator: " << garbageTeminator << std::endl
-                  << "NumberGenerator: " << numberGenerator << std::endl
-                  << "Secret Size: " << secretSize << std::endl
-                  << "------------------------------------------------" << std::endl;
-    }
-};
-
-/**
  * Apply the necessary validations over a Secret Value protocol
  * before creating the array.
  * Also, get an Array and transform in a protocol structure.
@@ -133,11 +149,10 @@ public:
             int startPosition,
             int jump,
             int garbageTerminatorSize,
-            char garbageTeminator,
-            int numberGenerator,
-            int secretSize);
+            std::string garbageTeminator,
+            int numberGenerator);
 
-    static const SecretValueProtocol buildProtocol(const std::vector<std::string>& dataArr);
+    static const SecretValueProtocol buildProtocol(const SecretArray_t& dataArr);
 
 private:
     static void validateProtocolData(SecretValueProtocol& valueProtocolData);

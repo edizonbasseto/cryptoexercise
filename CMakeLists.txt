@@ -46,6 +46,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include/handlers)
 
 set(CRYPTOMETHOD_EXECUTABLES_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/business/KeyBusinessLogic.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/business/MessageBusinessLogic.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers/RandomHelpers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers/RsaHelpers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp )
@@ -54,4 +55,4 @@ add_executable(cryptomethod ${CRYPTOMETHOD_EXECUTABLES_FILES})
 install(TARGETS cryptomethod DESTINATION bin)
 
 #Joining LIBS
-target_link_libraries(cryptomethod PUBLIC gmp gmpxx cryptopp pthread)
+target_link_libraries(cryptomethod PUBLIC gmp gmpxx cryptopp boost_system)

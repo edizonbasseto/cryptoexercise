@@ -23,11 +23,22 @@
 class RandomHelpers
 {
 public:
+    RandomHelpers(RandomHelpers const&) = delete;
+    void operator=(RandomHelpers const&) = delete;
+
+    // Singleton.
+    static RandomHelpers& getInstance()
+    {
+        static RandomHelpers instance;
+        return instance;
+    }
+
     /**
      * Gera uma palavra randomica baseado no tamanho fornecido.
      **/
     std::string getRandomWord(int size);
 private:
+    RandomHelpers();
     /**
      * Take a given ByteBlock and convert to string UTF8 value
      */
