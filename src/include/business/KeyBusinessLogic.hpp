@@ -19,8 +19,9 @@
 #include <tuple>
 #include <limits>
 #include <gmp.h>
+#include <RsaHelpers.hpp>
 
-typedef std::array<std::string, 5> ProtocolArray_t;
+static const std::string PROTOCOL_DELIMITER = ";";
 typedef std::vector<unsigned long int> ContinuedFractionForm_t;
 
 /**
@@ -33,12 +34,16 @@ public:
      * Receive the RSA encrypted secret value, decrypt it, and
      * read the protocol accordingly.
      */
-    static const ProtocolArray_t& decodeSecretValue(const std::string secretValue);
+    static const SecretValueProtocol decodeSecretValue(const std::string& encodedSecretValue,
+                                                       RsaHelpers::Person personFrom,
+                                                       RsaHelpers::Person personTo);
 
     /**
      * Encrypt a secret value with RSA
      **/
-    static const std::string encryptSecretValue(const ProtocolArray_t& secretValue);
+    static const std::string encryptSecretValue(const SecretValueProtocol& secretValue,
+                                                RsaHelpers::Person personFrom,
+                                                RsaHelpers::Person personTo);
 
 };
 
@@ -96,6 +101,21 @@ struct SecretValueProtocol
     int garbageTerminatorSize;
     char garbageTeminator;
     int numberGenerator;
+    int secretSize;
+
+    void dump()
+    {
+        std::cout << "------------------------------------------------" << std::endl
+                  << std::endl << "SECRET VALUES PROTOCOL" << std::endl
+                  << "------------------------------------------------" << std::endl
+                  << "Start Position:" << startPosition << std::endl
+                  << "Jump: " << jump << std::endl
+                  << "GarbageTerminatorSize: " << garbageTerminatorSize << std::endl
+                  << "GarbageTerminator: " << garbageTeminator << std::endl
+                  << "NumberGenerator: " << numberGenerator << std::endl
+                  << "Secret Size: " << secretSize << std::endl
+                  << "------------------------------------------------" << std::endl;
+    }
 };
 
 /**
@@ -107,13 +127,20 @@ class SecretValueProtocolBuilder
 {
 public:
     /**
-     * Generate an array from all protocol data
-     **/
-    const ProtocolArray_t& buildProtocolToArray(SecretValueProtocol& valueProtocolData);
-    const SecretValueProtocol& buildProtocolFromArray(ProtocolArray_t& protocolArray);
+     * Build and validate a protocol data
+     */
+    static const SecretValueProtocol buildProtocol(
+            int startPosition,
+            int jump,
+            int garbageTerminatorSize,
+            char garbageTeminator,
+            int numberGenerator,
+            int secretSize);
+
+    static const SecretValueProtocol buildProtocol(const std::vector<std::string>& dataArr);
 
 private:
-    void validateProtocolData(SecretValueProtocol& valueProtocolData);
+    static void validateProtocolData(SecretValueProtocol& valueProtocolData);
 };
 
 #endif

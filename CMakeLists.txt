@@ -33,19 +33,9 @@ set(BUILD_TESTING "" OFF)
 set(BUILD_TESTING_STATIC "" OFF)
 set(BUILD_TESTING_SHARED "" OFF)
 
-#copy jsonschemas
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/jsonSchemas/scrambler.recover.key.request.json
-               ${CMAKE_CURRENT_SOURCE_DIR}/dist/jsonSchemas/scrambler.recover.key.request.json COPYONLY)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/jsonSchemas/scrambler.slice.request.json
-               ${CMAKE_CURRENT_SOURCE_DIR}/dist/jsonSchemas/scrambler.slice.request.json COPYONLY)
-
 #Installing 3pps
 #########################
 set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory ( ${CMAKE_CURRENT_SOURCE_DIR}/3pp/nlohmann_json ) #The only project using correctly the CMAKE strucuture. Don't need to manually install.
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.pistache.txt)
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.rapidjson.txt)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.cryptopp.txt) #The worst... don't have a CMAKE file.
 
 #Add the given directories to those the compiler uses to search for include files.
@@ -55,22 +45,13 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include/business)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include/handlers)
 
 set(CRYPTOMETHOD_EXECUTABLES_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/business/SliceBusiness.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/business/KeyBusinessLogic.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/handlers/HealthCheckHandler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/handlers/ScramblerHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers/RandomHelpers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/helpers/RsaHelpers.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/DescramblerSliceRequest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/DescramblerSliceResponse.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/ScramblerSliceRequest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/ScramblerSliceResponse.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/schemas/SlicedData.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ScramblerEndpoint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp )
 
 add_executable(cryptomethod ${CRYPTOMETHOD_EXECUTABLES_FILES})
 install(TARGETS cryptomethod DESTINATION bin)
 
 #Joining LIBS
-target_link_libraries(cryptomethod PUBLIC gmp gmpxx cryptopp pistache nlohmann_json pthread)
+target_link_libraries(cryptomethod PUBLIC gmp gmpxx cryptopp pthread)

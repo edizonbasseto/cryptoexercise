@@ -12,7 +12,6 @@ O número utilizado para geração da fração continua será chamado de numero 
 que será explicado neste readme, será enviado entre as partes. O conjunto de dados formado por esse protocolo será
 chamado de palavra secreta.
 
-Para facilitar a comunicação entre as partes, o sistema irá prover uma REST API, encapsulando as lógicas de negócio da aplicação.
 **Sistema meramente acadêmico, sem utilização para ambientes produtivos**
 
 ## Como baixar
@@ -105,9 +104,32 @@ sigilo.
 
 ### O Protocolo
 
-O protocolo da chave secreta contem as seguintes informações:
+O protocolo da chave secreta tem como divisor de informações um ponto e virgula, e contem as seguintes informações, não necessariamente neste ordem:
 
      1. O Número Gerador: número responsável pela dízima de fração continuada.
      2. O ponto de inicio: posição, à partir do primeiro número da dízima, que irá iniciar a geração da chave secreta.
      3. Pulo: a quantidade de posições que deve-se pular, para ler o próximo número da dízima e continuar a formar a chave secreta.
-     4.
+     4. Tamanho da chave: a chave terá um tamanho determinado, mínimo de 32.
+     5. Delimitador de Lixo: o caracter na quantidade de repetições indicada, que determina que a palavra lida é, na verdade, uma palavra aleatória qualquer.
+     6. Repetições do delimitardor de lixo: a quantidade que o caracter precisar ser repetido para ser considerado um lixo.
+     7. Checksum.
+
+### RSA
+
+O envio da palavra secreta entre as partes se dá por meio de uma criptografia RSA, com uma chanve de 4096 bits. Isso permite o envio de uma palavra secreta maior, e com maior proteção.
+A biblioteca CryptoPP utiliza o método (OAEP) Optimal Asymmetric Encryption Padding, para geração da mensagem criptograda.
+Como esse trabalho é meramente para fins acadêmicos, as chaves estão fixadas no código, tanto a privada quando as publicas.
+
+### A Confirmação de chaves entre as partes
+
+Para que ocorra uma transação segura, no cenário de duas pessoas trocando mensages, primeiro PERSONA 01 envia a palavra secreta para PERSONA 02.
+
+PERSONA 02 recebe a palavra, utilizando de sua chave privada, descriptografa o valor e valida o sender o checksum.
+
+PERSONA 02 faz o processo reverso, usando a chave publica de PERSONA 01.
+
+PERSONA 01 valida a chave, o emissor e o checksum, além de verificar o conteúdo conhecido.
+
+Nesse momento, PERSONA 01, retorna a mensagem criptografada para PERSONA 02.
+
+PERSONA 02, em posse do protocolo, poderá descriptografar a mensage.
