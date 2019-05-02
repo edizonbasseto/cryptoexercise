@@ -45,9 +45,8 @@ Passos:
 
 1. Não é escopo desse trabalho a preocupação com execuçõs multi-threads.
 2. Não é escopo desse trabalho multi-plataformas.
-3. Não é escopo deste trabalho proteger as rotas de comunicação REST criadas com intuito de facilitar a demonstração.
-4. O sistema não é um sistema validado e "production-ready".
-5. Não otimizado para performance.
+3. O sistema não é um sistema validado e "production-ready".
+4. Não otimizado para performance.
 
 ### Geração de número randômicos
 
