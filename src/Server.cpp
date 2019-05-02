@@ -10,6 +10,7 @@
 #include <ScramblerEndpoint.hpp>
 #include <RandomHelpers.hpp>
 #include <KeyBusinessLogic.hpp>
+#include <RsaHelpers.hpp>
 
 void drawHeaderMessage(int threads)
 {
@@ -56,12 +57,21 @@ int main(int argc, char * argv[])
 
     RandomHelpers randomHelpers = RandomHelpers();
 
+     std::string x = RsaHelpers::getInstance().encryptRsa("XXXXXXXXXX", RsaHelpers::PERSON1);
 
+     std::cout << x << std::endl;
+
+     std::string y = RsaHelpers::getInstance().decryptRsa(x, RsaHelpers::PERSON1);
+
+     std::cout << y << std::endl;
+     RsaHelpers::getInstance().encryptRsa("123123", RsaHelpers::PERSON2);
+
+/*
     if (i>0)
     SecretKey::calculateKey(i,10,10,10);
     else
     SecretKey::calculateKey(17,50,50,50);
-
+*/
     //ScramblerEndpoint scrambler(addr, schemasdir);
     //scrambler.init(thr);
     //scrambler.start();
